@@ -1,9 +1,16 @@
 <?php
+// 汎用関数ファイル読み込み
 require_once MODEL_PATH . 'functions.php';
+// DB関数ファイル読み込み
 require_once MODEL_PATH . 'db.php';
 
 // DB利用
-
+/**
+ * id指定で商品id,name,stock,price,image,statusを取得
+ * @param mixed $db db hundle
+ * @param it $item_id 商品ID
+ * @return array 検索結果
+ */
 function get_item($db, $item_id){
   $sql = "
     SELECT
@@ -22,6 +29,12 @@ function get_item($db, $item_id){
   return fetch_query($db, $sql);
 }
 
+/**
+ * 商品一覧の情報を取得
+ * @param mixed $db db hundle
+ * @param bool $is_open 全取得(false)か、公開のみ(true)か
+ * @return array 取得結果
+ */
 function get_items($db, $is_open = false){
   $sql = '
     SELECT
@@ -43,14 +56,34 @@ function get_items($db, $is_open = false){
   return fetch_all_query($db, $sql);
 }
 
+/**
+ * 商品情報すべて取得、ステータス関係なし
+ * @param mixed $db DB hundle
+ * @return array 取得結果
+ */
 function get_all_items($db){
   return get_items($db);
 }
 
+/**
+ * 公開の商品のみの情報取得
+ * @param mixed $db DB hundle
+ * @return array 取得結果
+ */
 function get_open_items($db){
   return get_items($db, true);
 }
 
+/**
+ * 入力情報チェック＆商品登録
+ * @param mixed $db DBハンドル
+ * @param str $name 商品名
+ * @param int $price 値段
+ * @param int $stock 在庫数
+ * @param str $status open or close
+ * @param mixed $image
+ * @return bool
+ */
 function regist_item($db, $name, $price, $stock, $status, $image){
   $filename = get_upload_filename($image);
   if(validate_item($name, $price, $stock, $filename, $status) === false){
@@ -59,6 +92,17 @@ function regist_item($db, $name, $price, $stock, $status, $image){
   return regist_item_transaction($db, $name, $price, $stock, $status, $image, $filename);
 }
 
+/**
+ * DBへの商品登録と画像保存
+ * @param mixed $db
+ * @param str $name 商品名
+ * @param int $price 値段
+ * @param int $stock 在庫数
+ * @param str $status open or close
+ * @param mixed $image
+ * @param str $filename ファイル名
+ * @return bool
+ */
 function regist_item_transaction($db, $name, $price, $stock, $status, $image, $filename){
   $db->beginTransaction();
   if(insert_item($db, $name, $price, $stock, $filename, $status) 
@@ -71,6 +115,16 @@ function regist_item_transaction($db, $name, $price, $stock, $status, $image, $f
   
 }
 
+/**
+ * DBへの商品登録
+ * @param mixed $db DBハンドル
+ * @param str $name 商品名
+ * @param int $price 金額
+ * @param int $stock 在庫数
+ * @param str $filename ファイル名
+ * @param str $status 公開(open) or 非公開(close)
+ * @return bool execute_queryの結果
+ */
 function insert_item($db, $name, $price, $stock, $filename, $status){
   $status_value = PERMITTED_ITEM_STATUSES[$status];
   $sql = "
@@ -88,6 +142,13 @@ function insert_item($db, $name, $price, $stock, $filename, $status){
   return execute_query($db, $sql);
 }
 
+/**
+ * 商品ステータスの変更
+ * @param mixed $db DBハンドル
+ * @param int $item_id 商品ID
+ * @param int $status 1 or 0
+ * @return bool
+ */
 function update_item_status($db, $item_id, $status){
   $sql = "
     UPDATE
@@ -102,6 +163,13 @@ function update_item_status($db, $item_id, $status){
   return execute_query($db, $sql);
 }
 
+/**
+ * 商品の在庫数変更
+ * @param mixed $db DBハンドル
+ * @param int $item_id 商品ID
+ * @param int $stock 在庫数
+ * @return bool 
+ */
 function update_item_stock($db, $item_id, $stock){
   $sql = "
     UPDATE
@@ -116,8 +184,16 @@ function update_item_stock($db, $item_id, $stock){
   return execute_query($db, $sql);
 }
 
+/**
+ * 商品情報、画像の削除
+ * @param mixed $db DBハンドル
+ * @param int $item_id 商品ID
+ * @return bool
+ */
 function destroy_item($db, $item_id){
+  // 商品情報を取得
   $item = get_item($db, $item_id);
+  // 取得できない場合はfalseを返す
   if($item === false){
     return false;
   }
@@ -131,6 +207,12 @@ function destroy_item($db, $item_id){
   return false;
 }
 
+/**
+ * DBから商品情報削除
+ * @param mixed $db DBハンドル
+ * @param int $item_id 商品ID
+ * @return bool
+ */
 function delete_item($db, $item_id){
   $sql = "
     DELETE FROM
@@ -145,11 +227,24 @@ function delete_item($db, $item_id){
 
 
 // 非DB
-
+/**
+ * ステータスの確認
+ * @param array $item 商品情報
+ * @return bool
+ */
 function is_open($item){
   return $item['status'] === 1;
 }
 
+/**
+ * 入力チェック＆値代入
+ * @param str $name 商品名
+ * @param int $price 値段
+ * @param int $stock 在庫数
+ * @param str $filename ファイル名
+ * @param str $status open or close
+ * @return mixed 各値が代入された変数を返す
+ */
 function validate_item($name, $price, $stock, $filename, $status){
   $is_valid_item_name = is_valid_item_name($name);
   $is_valid_item_price = is_valid_item_price($price);
@@ -164,8 +259,14 @@ function validate_item($name, $price, $stock, $filename, $status){
     && $is_valid_item_status;
 }
 
+/**
+ * 名前の入力チェック
+ * @param str $name 商品名
+ * @param bool
+ */
 function is_valid_item_name($name){
   $is_valid = true;
+  // 文字数の条件に満たない場合にはエラーメッセージを設定する
   if(is_valid_length($name, ITEM_NAME_LENGTH_MIN, ITEM_NAME_LENGTH_MAX) === false){
     set_error('商品名は'. ITEM_NAME_LENGTH_MIN . '文字以上、' . ITEM_NAME_LENGTH_MAX . '文字以内にしてください。');
     $is_valid = false;
@@ -173,8 +274,14 @@ function is_valid_item_name($name){
   return $is_valid;
 }
 
+/**
+ * 値段の入力チェック
+ * @param int $price 値段
+ * @return bool
+ */
 function is_valid_item_price($price){
   $is_valid = true;
+  // 条件を満たさない場合にエラーメッセージを設定する
   if(is_positive_integer($price) === false){
     set_error('価格は0以上の整数で入力してください。');
     $is_valid = false;
@@ -182,8 +289,14 @@ function is_valid_item_price($price){
   return $is_valid;
 }
 
+/**
+ * 在庫数の入力チェック
+ * @param int $stock
+ * @return bool
+ */
 function is_valid_item_stock($stock){
   $is_valid = true;
+  // 条件を満たさない場合にはエラーメッセージを設定する
   if(is_positive_integer($stock) === false){
     set_error('在庫数は0以上の整数で入力してください。');
     $is_valid = false;
@@ -191,16 +304,28 @@ function is_valid_item_stock($stock){
   return $is_valid;
 }
 
+/**
+ * ファイル名の取得確認
+ * @param str $filename
+ * @return bool
+ */
 function is_valid_item_filename($filename){
   $is_valid = true;
+  // ファイル名が空の場合はfalseを返す
   if($filename === ''){
     $is_valid = false;
   }
   return $is_valid;
 }
 
+/**
+ * ステータスの確認
+ * @param str $status open or close
+ * @return bool
+ */
 function is_valid_item_status($status){
   $is_valid = true;
+  // statusが存在しない場合にfalseを返す
   if(isset(PERMITTED_ITEM_STATUSES[$status]) === false){
     $is_valid = false;
   }

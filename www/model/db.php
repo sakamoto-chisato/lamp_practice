@@ -1,5 +1,9 @@
 <?php
-
+/**
+ * DB接続
+ * @param null
+ * @return obj DBハンドル
+ */
 function get_db_connect(){
   // MySQL用のDSN文字列
   $dsn = 'mysql:dbname='. DB_NAME .';host='. DB_HOST .';charset='.DB_CHARSET;
@@ -16,10 +20,18 @@ function get_db_connect(){
   return $dbh;
 }
 
+/**
+ * sqlを実行し、結果を取得(結果が1件のときのみ？)
+ * @param mixed $dbh DB hundle
+ * @param str $sql sql
+ * @param array $params bindvalue
+ * @return array|bool
+ */
 function fetch_query($db, $sql, $params = array()){
   try{
     $statement = $db->prepare($sql);
     $statement->execute($params);
+    // 結果を1つだけ取得する
     return $statement->fetch();
   }catch(PDOException $e){
     set_error('データ取得に失敗しました。');
@@ -27,6 +39,13 @@ function fetch_query($db, $sql, $params = array()){
   return false;
 }
 
+/**
+ * sqlを実行し、結果を取得(複数件数取得する場合)
+ * @param mixed $dbh DB hundle
+ * @param str $sql sql
+ * @param array $params bindvalue
+ * @return array|bool
+ */
 function fetch_all_query($db, $sql, $params = array()){
   try{
     $statement = $db->prepare($sql);
@@ -38,6 +57,13 @@ function fetch_all_query($db, $sql, $params = array()){
   return false;
 }
 
+/**
+ * sqlの実行のみ
+ * @param mixed $dbh DB hundle
+ * @param str $sql sql
+ * @param array $params bindvalue
+ * @return bool
+ */
 function execute_query($db, $sql, $params = array()){
   try{
     $statement = $db->prepare($sql);

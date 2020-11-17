@@ -1,7 +1,11 @@
 <?php
+// 設定ファイルの読み込み
 require_once '../conf/const.php';
+// 汎用関数ファイルの読み込み
 require_once MODEL_PATH . 'functions.php';
+// ユーザに関する関数ファイルの読み込み
 require_once MODEL_PATH . 'user.php';
+// 商品に関する関数ファイルの読み込み
 require_once MODEL_PATH . 'item.php';
 
 session_start();
