@@ -2,7 +2,7 @@
 /**
  * DB接続
  * @param null
- * @return obj DBハンドル
+ * @return mixed DBハンドル
  */
 function get_db_connect(){
   // MySQL用のDSN文字列

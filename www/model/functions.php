@@ -6,7 +6,7 @@
  */
 function dd($var){
   var_dump($var);
-  // 関数の終了？
+  // 関数の終了
   exit();
 }
 
