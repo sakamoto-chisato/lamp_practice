@@ -14,12 +14,13 @@ if(is_logined() === false){
 $db = get_db_connect();
 $user = get_login_user($db);
 
+// 削除するカートIDを取得する
 $cart_id = get_post('cart_id');
-
+// カートから削除
 if(delete_cart($db, $cart_id)){
   set_message('カートを削除しました。');
 } else {
   set_error('カートの削除に失敗しました。');
 }
-
+// カートページへリダイレクト
 redirect_to(CART_URL);
