@@ -18,5 +18,7 @@ if(is_admin($user) === false){
   redirect_to(LOGIN_URL);
 }
 
+// DBから商品情報を全て取得
 $items = get_all_items($db);
+// 管理ページの表示
 include_once VIEW_PATH . '/admin_view.php';

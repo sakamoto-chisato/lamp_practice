@@ -7,5 +7,5 @@ session_start();
 if(is_logined() === true){
   redirect_to(HOME_URL);
 }
-
+// ログインページの表示
 include_once VIEW_PATH . 'login_view.php';
