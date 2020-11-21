@@ -60,6 +60,7 @@
     <?php } ?> 
   </div>
   <script>
+    // 削除ボタンを押した際に確認メッセージを表示
     $('.delete').on('click', () => confirm('本当に削除しますか？'))
   </script>
 </body>

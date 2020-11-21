@@ -1,18 +1,25 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+  <!-- ヘッドテンプレートの読み込み -->
   <?php include VIEW_PATH . 'templates/head.php'; ?>
   <title>商品管理</title>
+<<<<<<< HEAD
   <link rel="stylesheet" href="<?php print(h(STYLESHEET_PATH . 'admin.css')); ?>">
+=======
+  <!-- 管理者ページ用のCSSの読み込み -->
+  <link rel="stylesheet" href="<?php print(STYLESHEET_PATH . 'admin.css'); ?>">
+>>>>>>> add_comment
 </head>
 <body>
   <?php 
+  // ログイン後のヘッダー部分の読み込み
   include VIEW_PATH . 'templates/header_logined.php'; 
   ?>
 
   <div class="container">
     <h1>商品管理</h1>
-
+    <!-- メッセージが存在する場合には表示する -->
     <?php include VIEW_PATH . 'templates/messages.php'; ?>
 
     <form 
@@ -61,10 +68,18 @@
         </thead>
         <tbody>
           <?php foreach($items as $item){ ?>
+<<<<<<< HEAD
           <tr class="<?php print(h(is_open($item) ? '' : 'close_item')); ?>">
             <td><img src="<?php print(h(IMAGE_PATH . $item['image']));?>" class="item_image"></td>
             <td><?php print(h($item['name'])); ?></td>
             <td><?php print(h(number_format($item['price']))); ?>円</td>
+=======
+          <!-- 以下の意味がわからない -->
+          <tr class="<?php print(h(is_open($item) ? '' : 'close_item')); ?>">
+            <td><img src="<?php print(h(IMAGE_PATH . $item['image']));?>" class="item_image"></td>
+            <td><?php print(h($item['name'])); ?></td>
+            <td><?php print(h(number_format($item['price']))); ?>円</td>
+>>>>>>> add_comment
             <td>
               <form method="post" action="admin_change_stock.php">
                 <div class="form-group">
@@ -104,6 +119,7 @@
     <?php } ?> 
   </div>
   <script>
+    // 削除ボタンをクリックした際、確認メッセージを表示
     $('.delete').on('click', () => confirm('本当に削除しますか？'))
   </script>
 </body>
