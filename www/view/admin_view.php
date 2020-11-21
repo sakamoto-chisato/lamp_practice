@@ -1,18 +1,21 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+  <!-- ヘッドテンプレートの読み込み -->
   <?php include VIEW_PATH . 'templates/head.php'; ?>
   <title>商品管理</title>
+  <!-- 管理者ページ用のCSSの読み込み -->
   <link rel="stylesheet" href="<?php print(STYLESHEET_PATH . 'admin.css'); ?>">
 </head>
 <body>
   <?php 
+  // ログイン後のヘッダー部分の読み込み
   include VIEW_PATH . 'templates/header_logined.php'; 
   ?>
 
   <div class="container">
     <h1>商品管理</h1>
-
+    <!-- メッセージが存在する場合には表示する -->
     <?php include VIEW_PATH . 'templates/messages.php'; ?>
 
     <form 
@@ -61,6 +64,7 @@
         </thead>
         <tbody>
           <?php foreach($items as $item){ ?>
+          <!-- 以下の意味がわからない -->
           <tr class="<?php print(is_open($item) ? '' : 'close_item'); ?>">
             <td><img src="<?php print(IMAGE_PATH . $item['image']);?>" class="item_image"></td>
             <td><?php print($item['name']); ?></td>
@@ -104,6 +108,7 @@
     <?php } ?> 
   </div>
   <script>
+    // 削除ボタンをクリックした際、確認メッセージを表示
     $('.delete').on('click', () => confirm('本当に削除しますか？'))
   </script>
 </body>
