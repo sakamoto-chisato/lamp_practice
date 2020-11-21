@@ -1,7 +1,15 @@
 <?php 
+// 汎用関数ファイルの読み込み
 require_once MODEL_PATH . 'functions.php';
+// DB関数ファイルの読み込み
 require_once MODEL_PATH . 'db.php';
 
+/**
+ * ユーザのカートに入っている全ての商品情報取得
+ * @param mixed $db DBハンドル
+ * @param int $user_id ユーザID
+ * @return array 結果取得
+ */
 function get_user_carts($db, $user_id){
   $sql = "
     SELECT
@@ -21,11 +29,18 @@ function get_user_carts($db, $user_id){
     ON
       carts.item_id = items.item_id
     WHERE
-      carts.user_id = {$user_id}
+      carts.user_id = ?
   ";
-  return fetch_all_query($db, $sql);
+  return fetch_all_query($db, $sql, array($user_id));
 }
 
+/**
+ * ユーザのカートに入っている特定の商品情報取得
+ * @param mixed $db DBハンドル
+ * @param int $user_id ユーザID
+ * @param int $item_id 商品ID
+ * @return array 結果取得
+ */
 function get_user_cart($db, $user_id, $item_id){
   $sql = "
     SELECT
@@ -45,23 +60,40 @@ function get_user_cart($db, $user_id, $item_id){
     ON
       carts.item_id = items.item_id
     WHERE
-      carts.user_id = {$user_id}
+      carts.user_id = ?
     AND
-      items.item_id = {$item_id}
+      items.item_id = ?
   ";
 
-  return fetch_query($db, $sql);
+  return fetch_query($db, $sql, array($user_id, $item_id));
 
 }
 
+/**
+ * カートへ追加ボタン押下時の処理
+ * @param mixed $db DBハンドル
+ * @param int $user_id ユーザID
+ * @param $item_id 商品ID
+ * @return bool DB登録、更新後の結果
+ */
 function add_cart($db, $user_id, $item_id ) {
   $cart = get_user_cart($db, $user_id, $item_id);
+  // 情報が取得できなかったら新規登録する
   if($cart === false){
     return insert_cart($db, $user_id, $item_id);
   }
+  // 存在していた場合には購入数を1追加する
   return update_cart_amount($db, $cart['cart_id'], $cart['amount'] + 1);
 }
 
+/**
+ * DBへのカート情報新規追加
+ * @param mixed $db DBハンドル
+ * @param int $user_id ユーザID
+ * @param int $item_id 商品ID
+ * @param int $amount 購入数
+ * @return bool SQL実行結果
+ */
 function insert_cart($db, $user_id, $item_id, $amount = 1){
   $sql = "
     INSERT INTO
@@ -70,41 +102,62 @@ function insert_cart($db, $user_id, $item_id, $amount = 1){
         user_id,
         amount
       )
-    VALUES({$item_id}, {$user_id}, {$amount})
+    VALUES(?, ?, ?)
   ";
 
-  return execute_query($db, $sql);
+  return execute_query($db, $sql, array($item_id, $user_id, $amount));
 }
 
+/**
+ * カートにすでに存在する商品の購入数を変更する
+ * @param mixed $db DBハンドル
+ * @param int $cart_id 該当カートID
+ * @param int $amount 購入数
+ * @return bool SQL実行結果
+ */
 function update_cart_amount($db, $cart_id, $amount){
   $sql = "
     UPDATE
       carts
     SET
-      amount = {$amount}
+      amount = ?
     WHERE
-      cart_id = {$cart_id}
+      cart_id = ?
     LIMIT 1
   ";
-  return execute_query($db, $sql);
+  return execute_query($db, $sql, array($amount, $cart_id));
 }
 
+/**
+ * DBからカートに入っている、該当商品の削除
+ * @param mixed $db DBハンドル
+ * @param int $cart_id 該当カートID
+ * @return bool SQL実行結果
+ */
 function delete_cart($db, $cart_id){
   $sql = "
     DELETE FROM
       carts
     WHERE
-      cart_id = {$cart_id}
+      cart_id = ?
     LIMIT 1
   ";
 
-  return execute_query($db, $sql);
+  return execute_query($db, $sql, array($cart_id));
 }
 
+/**
+ * 購入できるか確認→在庫数変更→カート情報消去
+ * @param mixed $db DBハンドル
+ * @param array $carts カートの登録情報
+ * @return bool 実行結果
+ */
 function purchase_carts($db, $carts){
+  // 購入できるかチェック
   if(validate_cart_purchase($carts) === false){
     return false;
   }
+  // 配列から1商品ずつ取り出して在庫数変更を実施
   foreach($carts as $cart){
     if(update_item_stock(
         $db, 
@@ -114,22 +167,32 @@ function purchase_carts($db, $carts){
       set_error($cart['name'] . 'の購入に失敗しました。');
     }
   }
-  
+  // 特定ユーザのカート情報の削除
   delete_user_carts($db, $carts[0]['user_id']);
 }
 
+/**
+ * 特定ユーザのカート情報を消去
+ * @param mixed $db DBハンドル
+ * @param int $user_id ユーザID
+ * @return bool 実行結果
+ */
 function delete_user_carts($db, $user_id){
   $sql = "
     DELETE FROM
       carts
     WHERE
-      user_id = {$user_id}
+      user_id = ?
   ";
 
-  execute_query($db, $sql);
+  execute_query($db, $sql, array($user_id));
 }
 
-
+/**
+ * 購入合計金額の計算
+ * @param array $carts カートの商品情報
+ * @return int $total_price 合計金額
+ */
 function sum_carts($carts){
   $total_price = 0;
   foreach($carts as $cart){
@@ -138,19 +201,29 @@ function sum_carts($carts){
   return $total_price;
 }
 
+/**
+ * 購入できるかチェック
+ * @param array $carts 商品情報
+ * @return bool チェック結果
+ */
 function validate_cart_purchase($carts){
+  // 登録された情報が存在するか確認
   if(count($carts) === 0){
     set_error('カートに商品が入っていません。');
     return false;
   }
+  // 1商品ずつ取り出して
   foreach($carts as $cart){
+    // 公開かどうかを確認
     if(is_open($cart) === false){
       set_error($cart['name'] . 'は現在購入できません。');
     }
+    // 在庫数が足りるかを確認
     if($cart['stock'] - $cart['amount'] < 0){
       set_error($cart['name'] . 'は在庫が足りません。購入可能数:' . $cart['stock']);
     }
   }
+  // エラーが一つでも存在するならfalseを返す
   if(has_error() === true){
     return false;
   }
