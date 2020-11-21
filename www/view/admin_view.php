@@ -4,12 +4,8 @@
   <!-- ヘッドテンプレートの読み込み -->
   <?php include VIEW_PATH . 'templates/head.php'; ?>
   <title>商品管理</title>
-<<<<<<< HEAD
-  <link rel="stylesheet" href="<?php print(h(STYLESHEET_PATH . 'admin.css')); ?>">
-=======
   <!-- 管理者ページ用のCSSの読み込み -->
-  <link rel="stylesheet" href="<?php print(STYLESHEET_PATH . 'admin.css'); ?>">
->>>>>>> add_comment
+  <link rel="stylesheet" href="<?php print(h(STYLESHEET_PATH . 'admin.css')); ?>">
 </head>
 <body>
   <?php 
