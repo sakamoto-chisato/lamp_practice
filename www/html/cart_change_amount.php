@@ -11,6 +11,13 @@ if(is_logined() === false){
   redirect_to(LOGIN_URL);
 }
 
+// check CSRF token
+$token = get_session('csrf_token');
+if (is_valid_csrf_token($token) === false) {
+  echo "不正なリクエストです";
+  exit;
+}
+
 $db = get_db_connect();
 $user = get_login_user($db);
 
