@@ -1,7 +1,7 @@
 <meta charset="UTF-8">
 <!-- viewport用メタタグ モバイル端末用 -->
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<!-- IEでも表示に差分が生じないように？ -->
+<!-- 古いIEにも対応したい場合等に使われる -->
 <meta http-equiv="X-UA-Compatible" content="ie=edge">
 <!-- Bootstrap -->
 <link rel="stylesheet" href="//stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">

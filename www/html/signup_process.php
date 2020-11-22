@@ -9,6 +9,13 @@ if(is_logined() === true){
   redirect_to(HOME_URL);
 }
 
+// check CSRF token
+$token = get_session('csrf_token');
+if (is_valid_csrf_token($token) === false) {
+  echo "不正なリクエストです";
+  exit;
+}
+
 // ユーザ名、パスワード、確認用パスワードの取得
 $name = get_post('name');
 $password = get_post('password');

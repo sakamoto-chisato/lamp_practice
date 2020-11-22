@@ -2,7 +2,7 @@
 <header>
   <nav class="navbar navbar-expand-sm navbar-light bg-light">
     <a class="navbar-brand" href="<?php print(h(HOME_URL));?>">Market</a>
-    <!-- 以下が必要な理由とは？ -->
+    <!-- ウィンドウサイズが小さい場合のメニューボタン -->
     <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#headerNav" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="ナビゲーションの切替">
       <span class="navbar-toggler-icon"></span>
     </button>

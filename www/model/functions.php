@@ -270,3 +270,26 @@ function is_valid_upload_image($image){
 function h($str) {
   return htmlspecialchars($str , ENT_QUOTES, 'UTF-8');
 }
+
+/**
+ * CSRFトークンの生成
+ * @param undefined
+ * @return str $token CSRFトークン
+ */
+function get_csrf_token() {
+  $token = get_random_string(30);
+  set_session('csrf_token', $token);
+  return $token;
+}
+
+/**
+ * CSRFトークンの確認
+ * @param str $token CSRFトークン
+ * @return bool
+ */
+function is_valid_csrf_token(string $token) {
+  if($token === '') {
+    return false;
+  }
+  return $token === get_session('csrf_token');
+}

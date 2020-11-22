@@ -20,5 +20,9 @@ if(is_admin($user) === false){
 
 // DBから商品情報を全て取得
 $items = get_all_items($db);
+
+// CSRF tokenの取得
+$token = get_csrf_token();
+
 // 管理ページの表示
 include_once VIEW_PATH . '/admin_view.php';

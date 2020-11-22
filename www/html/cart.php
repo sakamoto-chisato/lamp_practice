@@ -18,5 +18,9 @@ $user = get_login_user($db);
 $carts = get_user_carts($db, $user['user_id']);
 // 合計金額の取得
 $total_price = sum_carts($carts);
+
+// get CSRF token 
+$token = get_csrf_token();
+
 // カートページを表示
 include_once VIEW_PATH . 'cart_view.php';
