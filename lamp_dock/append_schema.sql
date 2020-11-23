@@ -1,19 +1,18 @@
-create table purchased_history (
-    purchased_id int(11) auto_increment,
-    user_id int(11),
-    purchased_total_price int(11),
-    purchased_datetime datetime cuurent_timestamp,
-    primary key(purchased_id)
+CREATE TABLE purchased_history (
+    purchased_id INT(11) AUTO_INCREMENT,
+    user_id INT(11),
+    purchased_datetime DATETIME CURRENT_TIMESTAMP,
+    PRIMARY KEY(purchased_id)
 );
 
-create table purchased_history_detail (
-    id int(11) auto_increment,
-    purchased_id int(11),
-    purchased_name varchar(100) collate utf8_general_ci,
-    purchased_price int(11),
-    purchased_amount int(11),
-    created datetime current_timestamp,
-    primary key(id),
-    foreign key(purchased_id)
-    references purchased_history(purchased_id)
+CREATE TABLE purchased_history_detail (
+    id INT(11) AUTO_INCREMENT,
+    purchased_id INT(11),
+    purchased_name VARCHAR(100) COLLATE utf8_general_ci,
+    purchased_price INT(11),
+    purchased_amount INT(11),
+    created DATETIME CURRENT_TIMESTAMP,
+    PRIMARY KEY(id),
+    FOREIGN KEY(purchased_id)
+    REFERENCES purchased_history(purchased_id)
 );
