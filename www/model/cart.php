@@ -251,3 +251,43 @@ function validate_cart_purchase($carts){
   return true;
 }
 
+/**
+ * 購入履歴情報をDB登録
+ * @param mixed $db DBハンドル
+ * @param int $user_id ユーザID
+ * @return bool 
+ */
+function write_history($db, $user_id) {
+  $sql = "
+    INSERT INTO
+      purchased_history(
+        user_id
+      )
+      VALUES(?)
+  ";
+  return execute_query($db, $sql, [$user_id]);
+
+}
+
+/**
+ * 購入明細情報をDB登録
+ * @param mixed $db
+ * @param int $last_insert_id
+ * @param str $item_name
+ * @param int $item_price
+ * @param int $amount
+ * @return bool 
+ */
+function write_history_detail($db, $last_insert_id, $item_name, $item_price, $amount) {
+  $sql = "
+    INSERT INTO
+      purchased_history_detail(
+        purchased_id,
+        purchased_name,
+        purchased_price,
+        purchased_amount
+      )
+    VALUES(?, ?, ?, ?)
+  ";
+   return execute_query($db, $sql, [$last_insert_id, $item_name, $item_price, $amount]);
+} 
