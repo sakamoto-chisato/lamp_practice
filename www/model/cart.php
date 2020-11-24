@@ -157,18 +157,39 @@ function purchase_carts($db, $carts){
   if(validate_cart_purchase($carts) === false){
     return false;
   }
-  // 配列から1商品ずつ取り出して在庫数変更を実施
-  foreach($carts as $cart){
-    if(update_item_stock(
+  // トランザクション開始
+  $db -> beginTransaction();
+  try {
+    // 購入履歴に追加
+    write_history($db, $carts[0]['user_id']);
+    $last_insert_id = $db -> lastInsertId();
+
+    // 配列から1商品ずつ取り出す
+    foreach($carts as $cart){
+      // 在庫数変更
+      update_item_stock(
         $db, 
         $cart['item_id'], 
         $cart['stock'] - $cart['amount']
-      ) === false){
-      set_error($cart['name'] . 'の購入に失敗しました。');
+      );
+
+      // 購入明細に追加
+      write_history_detail(
+        $db,
+        $last_insert_id,
+        $cart['name'],
+        $cart['price'],
+        $cart['amount']
+      );
     }
+    // 特定ユーザのカート情報の削除
+    delete_user_carts($db, $carts[0]['user_id']);
+    return $db -> commit();
+
+  } catch (Exception $e) {
+    $db -> rollBack();
+    return false;
   }
-  // 特定ユーザのカート情報の削除
-  delete_user_carts($db, $carts[0]['user_id']);
 }
 
 /**
