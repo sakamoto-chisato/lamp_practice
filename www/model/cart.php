@@ -157,39 +157,18 @@ function purchase_carts($db, $carts){
   if(validate_cart_purchase($carts) === false){
     return false;
   }
-  // トランザクション開始
-  $db -> beginTransaction();
-  try {
-    // 購入履歴に追加
-    write_history($db, $carts[0]['user_id']);
-    $last_insert_id = $db -> lastInsertId();
-
-    // 配列から1商品ずつ取り出す
-    foreach($carts as $cart){
-      // 在庫数変更
-      update_item_stock(
+  // 配列から1商品ずつ取り出して在庫数変更を実施
+  foreach($carts as $cart){
+    if(update_item_stock(
         $db, 
         $cart['item_id'], 
         $cart['stock'] - $cart['amount']
-      );
-
-      // 購入明細に追加
-      write_history_detail(
-        $db,
-        $last_insert_id,
-        $cart['name'],
-        $cart['price'],
-        $cart['amount']
-      );
+      ) === false){
+      set_error($cart['name'] . 'の購入に失敗しました。');
     }
-    // 特定ユーザのカート情報の削除
-    delete_user_carts($db, $carts[0]['user_id']);
-    return $db -> commit();
-
-  } catch (Exception $e) {
-    $db -> rollBack();
-    return false;
   }
+  // 特定ユーザのカート情報の削除
+  delete_user_carts($db, $carts[0]['user_id']);
 }
 
 /**
@@ -251,43 +230,3 @@ function validate_cart_purchase($carts){
   return true;
 }
 
-/**
- * 購入履歴情報をDB登録
- * @param mixed $db DBハンドル
- * @param int $user_id ユーザID
- * @return bool 
- */
-function write_history($db, $user_id) {
-  $sql = "
-    INSERT INTO
-      purchased_history(
-        user_id
-      )
-      VALUES(?)
-  ";
-  return execute_query($db, $sql, [$user_id]);
-
-}
-
-/**
- * 購入明細情報をDB登録
- * @param mixed $db
- * @param int $last_insert_id
- * @param str $item_name
- * @param int $item_price
- * @param int $amount
- * @return bool 
- */
-function write_history_detail($db, $last_insert_id, $item_name, $item_price, $amount) {
-  $sql = "
-    INSERT INTO
-      purchased_history_detail(
-        purchased_id,
-        purchased_name,
-        purchased_price,
-        purchased_amount
-      )
-    VALUES(?, ?, ?, ?)
-  ";
-   return execute_query($db, $sql, [$last_insert_id, $item_name, $item_price, $amount]);
-}
