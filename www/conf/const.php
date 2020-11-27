@@ -26,6 +26,8 @@ define('HOME_URL', '/index.php');
 define('CART_URL', '/cart.php');
 define('FINISH_URL', '/finish.php');
 define('ADMIN_URL', '/admin.php');
+define('HISTORY_URL', '/history.php');
+define('HISTORY_DETAIL_URL', '/history_detail.php');
 
 // 文字列チェック
 // 英数字のチェック
