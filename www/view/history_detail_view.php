@@ -16,7 +16,7 @@
         <h4>注文番号：<?php print(h($purchased_id)); ?> </h4>
       </div>
       <div class="col-6">
-        <h4>注文日時：<?php print(h($values[0]['purchased_datetime'])); ?></h4>
+        <h4>注文日時：<?php print(h($history_details[0]['purchased_datetime'])); ?></h4>
       </div>
       <div class="col-sm">
         <h4 class="text-right">合計金額: <?php print(h(number_format($total))); ?>円</h4>
@@ -32,14 +32,14 @@
         </tr>
       </thead>
       <tbody>
-        <?php foreach($values as $value){ ?>
+        <?php foreach($history_details as $item){ ?>
         <tr>
-          <td><?php print(h($value['purchased_name'])); ?></td>
-          <td><?php print(h(number_format($value['purchased_price']))); ?>円</td>
+          <td><?php print(h($item['purchased_name'])); ?></td>
+          <td><?php print(h(number_format($item['purchased_price']))); ?>円</td>
           <td>
-            <?php print(h($value['purchased_amount'])); ?>個
+            <?php print(h($item['purchased_amount'])); ?>個
           </td>
-          <td><?php print(h(number_format($value['d.purchased_price * d.purchased_amount']))); ?>円</td>
+          <td><?php print(h(number_format($item['subtotal']))); ?>円</td>
         </tr>
         <?php } ?>
       </tbody>

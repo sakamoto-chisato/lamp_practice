@@ -22,13 +22,13 @@
         </tr>
       </thead>
       <tbody>
-        <?php foreach($values as $value){ ?>
+        <?php foreach($history_items as $item){ ?>
         <tr>
-          <td><?php print(h($value['purchased_id'])); ?></td>
-          <td><?php print(h($value['purchased_datetime'])); ?></td>
-          <td><?php print(h(number_format($value['SUM(d.purchased_price * d.purchased_amount)']))); ?>円</td>
+          <td><?php print(h($item['purchased_id'])); ?></td>
+          <td><?php print(h($item['purchased_datetime'])); ?></td>
+          <td><?php print(h(number_format($item['total']))); ?>円</td>
           <td>
-            <a href="<?php print(h(HISTORY_DETAIL_URL) .'?purchased_id=' . $value['purchased_id']);?>" class="btn btn-primary btn-sm btn-block">購入明細</a>
+            <a href="<?php print(h(HISTORY_DETAIL_URL) .'?purchased_id=' . $item['purchased_id']);?>" class="btn btn-primary btn-sm btn-block">購入明細</a>
           </td>
         </tr>
         <?php } ?>

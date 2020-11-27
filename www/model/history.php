@@ -9,12 +9,12 @@ require_once MODEL_PATH . 'db.php';
  * @param mixed $db
  * @return array|bool
  */
-function get_all_history($db) {
+function get_all_history_items($db) {
   $sql = "
     SELECT 
       h.purchased_id, 
       h.purchased_datetime, 
-      SUM(d.purchased_price * d.purchased_amount)
+      SUM(d.purchased_price * d.purchased_amount) AS total
     FROM purchased_history AS h
     INNER JOIN purchased_history_detail AS d 
     ON h.purchased_id = d.purchased_id
@@ -31,12 +31,12 @@ function get_all_history($db) {
  * @param int $id 
  * @return array|bool
  */
-function get_history($db, $user_id) {
+function get_history_items($db, $user_id) {
   $sql = "
     SELECT 
       h.purchased_id, 
       h.purchased_datetime, 
-      SUM(d.purchased_price * d.purchased_amount)
+      SUM(d.purchased_price * d.purchased_amount) AS total
     FROM purchased_history AS h
     INNER JOIN purchased_history_detail AS d
     ON h.purchased_id = d.purchased_id
@@ -53,7 +53,7 @@ function get_history($db, $user_id) {
  * @param int $purchased_id 注文番号
  * @return array|bool
  */
-function get_history_detail($db, $purchased_id) {
+function get_history_details($db, $purchased_id) {
   $sql = "
     SELECT
       h.purchased_id,
@@ -62,7 +62,7 @@ function get_history_detail($db, $purchased_id) {
       d.purchased_name,
       d.purchased_price,
       d.purchased_amount,
-      d.purchased_price * d.purchased_amount
+      d.purchased_price * d.purchased_amount AS subtotal
     FROM purchased_history_detail AS d
     INNER JOIN purchased_history AS h
     ON d.purchased_id = h.purchased_id
@@ -78,7 +78,7 @@ function get_history_detail($db, $purchased_id) {
  */
 function purchased_total($values) {
   foreach ($values as $value) {
-    $total += $value['d.purchased_price * d.purchased_amount'];
+    $total += $value['subtotal'];
   }
   return $total;
 }

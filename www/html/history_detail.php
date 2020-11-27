@@ -15,9 +15,9 @@ $db = get_db_connect();
 $user = get_login_user($db);
 
 $purchased_id = get_get('purchased_id');
-$values = get_history_detail($db, $purchased_id);
-$total = purchased_total($values);
-if (is_admin($user) === false && $values[0]['user_id'] !== $user['user_id']) {
+$history_details = get_history_details($db, $purchased_id);
+$total = purchased_total($history_details);
+if (is_admin($user) === false && $history_details[0]['user_id'] !== $user['user_id']) {
     set_error('指定した注文番号の購入明細は閲覧できません');
     redirect_to(HISTORY_URL);
 }

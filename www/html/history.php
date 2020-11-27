@@ -15,9 +15,9 @@ $db = get_db_connect();
 $user = get_login_user($db);
 
 if(is_admin($user)){
-  $values = get_all_history($db);
+  $history_items = get_all_history_items($db);
 } else {
-  $values = get_history($db, $user['user_id']);
+  $history_items = get_history_items($db, $user['user_id']);
 }
 
 include_once '../view/history_view.php';
