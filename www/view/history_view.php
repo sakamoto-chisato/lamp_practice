@@ -15,21 +15,21 @@
     <table class="table table-bordered text-center">
       <thead class="thead-light">
         <tr>
-          <th></th>
           <th>注文番号</th>
           <th>購入日時</th>
           <th>合計金額</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
         <?php foreach($values as $value){ ?>
         <tr>
-          <td>
-            <a href="<?php print(h(HISTORY_DETAIL_URL) .'?purchased_id=' . $value['purchased_id']);?>" class="btn btn-primary btn-sm btn-block">購入明細</a>
-          </td>
           <td><?php print(h($value['purchased_id'])); ?></td>
           <td><?php print(h($value['purchased_datetime'])); ?></td>
           <td><?php print(h(number_format($value['SUM(d.purchased_price * d.purchased_amount)']))); ?>円</td>
+          <td>
+            <a href="<?php print(h(HISTORY_DETAIL_URL) .'?purchased_id=' . $value['purchased_id']);?>" class="btn btn-primary btn-sm btn-block">購入明細</a>
+          </td>
         </tr>
         <?php } ?>
       </tbody>
