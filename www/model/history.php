@@ -57,6 +57,7 @@ function get_history_detail($db, $purchased_id) {
   $sql = "
     SELECT
       h.purchased_id,
+      h.user_id,
       h.purchased_datetime, 
       d.purchased_name,
       d.purchased_price,
