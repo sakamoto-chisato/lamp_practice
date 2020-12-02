@@ -13,8 +13,15 @@ if(is_logined() === false){
 $db = get_db_connect();
 $user = get_login_user($db);
 
-// 公開商品のみ取得
-$items = get_open_items($db);
+// constから引数に渡してあげる
+$per_page_items = PER_PAGE_ITEMS;
+
+// ページ数関連の取得
+$page = get_item_page();
+$total_page = get_item_total_page($db, $per_page_items);
+
+// 公開商品のみかつページごとの商品情報取得
+$items = get_page_items($db, $page, $per_page_items);
 
 // get CSRF token
 $token = get_csrf_token();

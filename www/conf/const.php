@@ -60,3 +60,6 @@ define('PERMITTED_IMAGE_TYPES', array(
   IMAGETYPE_JPEG => 'jpg',
   IMAGETYPE_PNG => 'png',
 ));
+
+// １ページあたりの取得件数
+define('PER_PAGE_ITEMS', 8);
