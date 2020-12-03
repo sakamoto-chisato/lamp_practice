@@ -68,11 +68,13 @@ function get_all_items($db){
 /**
  * 公開の商品のみの情報取得
  * @param mixed $db DB hundle
+ * @param int $page
  * @return array 取得結果
  */
-function get_open_items($db){
-  return get_items($db, true);
-}
+// get_page_itemsの関数のみで良いと考えコメントアウト
+//function get_open_items($db, $page=1){
+//  return get_page_items($db, true, $page);
+//}
 
 /**
  * 入力情報チェック＆商品登録
@@ -90,6 +92,54 @@ function regist_item($db, $name, $price, $stock, $status, $image){
     return false;
   }
   return regist_item_transaction($db, $name, $price, $stock, $status, $image, $filename);
+}
+
+/**
+ * 商品一覧の情報を取得
+ * @param mixed $db db hundle
+ * @param int $page 取得ページ数
+ * @param int $per_page_items １ページあたりの商品取得数
+ * @return array 取得結果
+ */
+function get_page_items($db, $page=1, $per_page_items){
+  $sql = '
+    SELECT
+      item_id, 
+      name,
+      stock,
+      price,
+      image,
+      status
+    FROM
+      items
+    WHERE status = 1
+    LIMIT ?,?
+  ';
+
+  return fetch_all_query($db, $sql, [($page-1)*$per_page_items, $per_page_items]);
+}
+
+/**
+ * 総ページ数の取得
+ * @param mixed $db
+ * @return array|bool
+ */
+function get_item_total_page($db, $per_page_items) {
+  $sql = "SELECT count(*)/? AS total FROM items WHERE status=1";
+  $data = fetch_query($db, $sql, [$per_page_items]);
+  return ceil($data['total']);
+}
+
+/**
+ * 現在のページ数の取得
+ * @return int
+ */
+function get_item_page() {
+  if (get_get('page') === "") {
+    return 1;
+  } else {
+    return get_get('page');
+  }
 }
 
 /**
