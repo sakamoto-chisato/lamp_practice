@@ -49,7 +49,7 @@
         <a href="index.php?page=<?php print(h($page-1)); ?>"><div class="btn btn-light">前へ</div></a>
       <?php } ?>
       <?php for($i=1; $i<=$total_page; $i++) {
-        if ($i == $page) { ?>
+        if ($i === $page) { ?>
           <div class="btn btn-info"><?php print(h($i)); ?></div>
         <?php } else { ?>
           <a href="index.php?page=<?php print(h($i)); ?>"><div class="btn btn-light"><?php print(h($i)); ?></div></a>
